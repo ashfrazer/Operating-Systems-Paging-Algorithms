@@ -34,6 +34,7 @@ std::string* read_file(std::ifstream& file) {
     const int MAX = 20;
     std::string* input = new std::string[MAX];
     char algo_char;
+    int num_frame = 0;
     int index = 0;
 
     if (file.is_open()) {
@@ -47,9 +48,10 @@ std::string* read_file(std::ifstream& file) {
 
             // Initialize algo_char
             algo_char = line[0];
+            int num_frame = std::stoi(line.substr(2, 1));
 
             // Store each number in numbers array (ignoring algo_char)
-            for (int i = 2; i <= line.size(); i++) {
+            for (int i = 4; i <= line.size(); i++) {
                 // Parse on comma
                 if (line[i] == ',' || i == line.size()-1) {
                     // Add last integer if it's the last in array
@@ -69,6 +71,7 @@ std::string* read_file(std::ifstream& file) {
             }
             // Debugging
             std::cout << "Algorithm: " << algo_char << std::endl;
+            std::cout << "# of Frames: " << num_frame << std::endl;
             std::cout << "Nums: ";
             for (int i = 0; i < index; i++) {
                 std::cout << input[i] << " ";
@@ -89,7 +92,7 @@ std::string* read_file(std::ifstream& file) {
 }
 
 void perform_optimal(std::string input[]) {
-
+    
 }
 
 void perform_fifo(std::string input[]) {
