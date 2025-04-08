@@ -2,8 +2,8 @@
 #include <fstream>
 #include <string>
 
-void perform_optimal(std::string input[]);
-void perform_fifo(std::string input[]);
+void perform_optimal(std::string input[], int frames);
+void perform_fifo(std::string input[], int frames);
 std::string* read_file(std::ifstream& file);
 
 int main() {
@@ -91,10 +91,10 @@ std::string* read_file(std::ifstream& file) {
     return NULL;
 }
 
-void perform_optimal(std::string input[]) {
+void perform_optimal(std::string input[], int frames) {
     
 }
 
-void perform_fifo(std::string input[]) {
+void perform_fifo(std::string input[], int frames) {
     
 }
