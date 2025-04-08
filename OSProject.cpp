@@ -2,8 +2,8 @@
 #include <fstream>
 #include <string>
 
-void perform_optimal(std::string input[]);
-void perform_fifo(std::string input[]);
+void perform_optimal(std::string input);
+void perform_fifo(std::string input);
 std::string* read_file(std::ifstream& file);
 
 int main() {
@@ -19,7 +19,7 @@ int main() {
 
 
     // Perform FIFO algorithm
-
+    perform_fifo(*fifo_input);
 
     // Delete memory
     delete[] fifo_input;
@@ -31,7 +31,7 @@ int main() {
 
 std::string* read_file(std::ifstream& file) {
     // Initialize vars
-    const int MAX = 20;
+    const int MAX = 50;
     std::string* input = new std::string[MAX];
     char algo_char;
     int num_frame = 0;
@@ -90,10 +90,29 @@ std::string* read_file(std::ifstream& file) {
     return NULL;
 }
 
-void perform_optimal(std::string input[]) {
-    
+void perform_optimal(std::string input) {
+    // Get number of frames
+    int num_frames = std::stoi(input.substr(0, 1));
 }
 
-void perform_fifo(std::string input[]) {
-    
+void perform_fifo(std::string input) {
+    // Get number of frames
+    int num_frames = std::stoi(input.substr(0, 1));
+
+    // Initialize count
+    int count = 0;
+
+    // Initialize ref_string
+    int ref_string[50];
+
+    // Convert string input array to int array
+    for (int i = 2; i < 50; i++) {
+        if (input[i] != ' ') {
+            ref_string[count] = std::stoi(input.substr(i, 1));
+        }
+
+        // Increment count
+        count++;
+    }
+    std::cout << ref_string << std::endl;
 }
