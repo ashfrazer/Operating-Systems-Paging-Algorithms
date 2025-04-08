@@ -2,8 +2,8 @@
 #include <fstream>
 #include <string>
 
-void perform_optimal(std::string input[], int frames);
-void perform_fifo(std::string input[], int frames);
+void perform_optimal(std::string input[]);
+void perform_fifo(std::string input[]);
 std::string* read_file(std::ifstream& file);
 
 int main() {
@@ -48,10 +48,9 @@ std::string* read_file(std::ifstream& file) {
 
             // Initialize algo_char
             algo_char = line[0];
-            int num_frame = std::stoi(line.substr(2, 1));
-
+            int num_frame = std::stoi(line.substr(2, 2));
             // Store each number in numbers array (ignoring algo_char)
-            for (int i = 4; i <= line.size(); i++) {
+            for (int i = 2; i <= line.size(); i++) {
                 // Parse on comma
                 if (line[i] == ',' || i == line.size()-1) {
                     // Add last integer if it's the last in array
@@ -91,10 +90,10 @@ std::string* read_file(std::ifstream& file) {
     return NULL;
 }
 
-void perform_optimal(std::string input[], int frames) {
+void perform_optimal(std::string input[]) {
     
 }
 
-void perform_fifo(std::string input[], int frames) {
+void perform_fifo(std::string input[]) {
     
 }
