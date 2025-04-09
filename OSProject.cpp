@@ -5,6 +5,9 @@
 void perform_optimal(std::string input);
 void perform_fifo(std::string input);
 std::string* read_file(std::ifstream& file);
+void set_size(int array_size);
+int get_size();
+int size;
 
 int main() {
     // Initialize files
@@ -38,7 +41,7 @@ std::string* read_file(std::ifstream& file) {
     int index = 0;
 
     if (file.is_open()) {
-        // Initialize vars
+        // Initialize line
         std::string line;
 
         // Read in algo char and numbers
@@ -46,37 +49,25 @@ std::string* read_file(std::ifstream& file) {
             // Initialize num_string
             std::string num_string = "";
 
-            // Initialize algo_char
+            // Initialize algo_char and num_frame
             algo_char = line[0];
-            int num_frame = std::stoi(line.substr(2, 2));
-            // Store each number in numbers array (ignoring algo_char)
-            for (int i = 2; i <= line.size(); i++) {
-                // Parse on comma
-                if (line[i] == ',' || i == line.size()-1) {
-                    // Add last integer if it's the last in array
-                    if (i == line.size() - 1 && line[i] != ',') {
-                        num_string += line[i];
-                    }
-                    // Skip comma and add next integer
-                    input[index++] = num_string;
-                    
-                    // Empty num_string
-                    num_string = "";
-                }
-                else {
-                    // Add integer to num_string
-                    num_string += line[i];
-                }
-            }
+            num_frame = std::stoi(line.substr(2, 1));
+
+            // Store each number in numbers array (ignoring algo_char and num_frame)
+            std::string ref_string = line.substr(4);
+
+            // Store ref_string into input
+            input[index++] = ref_string;
+
+            // Set size of array
+            set_size(ref_string.length());
+
             // Debugging
             std::cout << "Algorithm: " << algo_char << std::endl;
             std::cout << "# of Frames: " << num_frame << std::endl;
-            std::cout << "Nums: ";
-            for (int i = 0; i < index; i++) {
-                std::cout << input[i] << " ";
-            }
-            std::cout << "\n";
+            std::cout << "Nums: " << ref_string << std::endl;
         }
+
         // Close file
         file.close();
 
@@ -88,6 +79,15 @@ std::string* read_file(std::ifstream& file) {
     }
 
     return NULL;
+}
+
+
+void set_size(int array_size) {
+    size = array_size;
+}
+
+int get_size() {
+    return size;
 }
 
 void perform_optimal(std::string input) {
@@ -102,17 +102,40 @@ void perform_fifo(std::string input) {
     // Initialize count
     int count = 0;
 
-    // Initialize ref_string
-    int ref_string[50];
+    // Set size
+    const int MAX = get_size();
 
-    // Convert string input array to int array
-    for (int i = 2; i < 50; i++) {
-        if (input[i] != ' ') {
-            ref_string[count] = std::stoi(input.substr(i, 1));
+    // Initialize ref_string
+    int* ref_string = new int[MAX];
+
+    // Loop through input and parse into integers
+    int i = 0;
+    while (i < input.size()) {
+        // Skip spaces and commas
+        if (input[i] == ' ' || input[i] == ',') {
+            i++;
+            continue;
         }
 
-        // Increment count
-        count++;
+        // Parse number
+        std::string num_string = "";
+        while (i < input.size() && input[i] != ' ' && input[i] != ',') {
+            num_string += input[i];
+            i++;
+        }
+
+        // Convert number_string to an integer and store in ref_string
+        if (!num_string.empty()) {
+            ref_string[count] = std::stoi(num_string);
+            count++;
+        }
     }
-    std::cout << ref_string << std::endl;
+
+    // Debugging
+    for (int i = 0; i < count; i++) {
+        std::cout << ref_string[i] << " ";
+    }
+
+    // Delete memory
+    delete[] ref_string;
 }
