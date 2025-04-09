@@ -7,7 +7,9 @@ void perform_fifo(std::string input);
 std::string* read_file(std::ifstream& file);
 void set_size(int array_size);
 int get_size();
+void set_frame(int no_frames);
 int size;
+int frame;
 
 int main() {
     // Initialize files
@@ -90,6 +92,14 @@ int get_size() {
     return size;
 }
 
+void set_frame(int no_frames) {
+    frame = no_frames;
+}
+
+int get_frame() {
+    return frame;
+}
+
 void perform_optimal(std::string input) {
     // Get number of frames
     int num_frames = std::stoi(input.substr(0, 1));
@@ -98,6 +108,9 @@ void perform_optimal(std::string input) {
 void perform_fifo(std::string input) {
     // Get number of frames
     int num_frames = std::stoi(input.substr(0, 1));
+
+    // Store num_frames in frames
+    set_frame(num_frames);
 
     // Initialize count
     int count = 0;
@@ -129,6 +142,12 @@ void perform_fifo(std::string input) {
             ref_string[count] = std::stoi(num_string);
             count++;
         }
+
+        // Set FRAMES constant
+        const int FRAMES = get_frame();
+
+        // Initialize and allocate paging array
+        int* paging = new int[FRAMES];
     }
 
     // Debugging
