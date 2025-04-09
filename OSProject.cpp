@@ -7,9 +7,12 @@ void perform_fifo(std::string input);
 std::string* read_file(std::ifstream& file);
 void set_size(int array_size);
 int get_size();
-void set_frame(int no_frames);
+void set_fifo_frame(int no_frames);
+void set_opt_frame(int no_frames);
+int get_frame(char algo);
 int size;
-int frame;
+int fifo_frame;
+int opt_frame;
 
 int main() {
     // Initialize files
@@ -53,7 +56,15 @@ std::string* read_file(std::ifstream& file) {
 
             // Initialize algo_char and num_frame
             algo_char = line[0];
+
             num_frame = std::stoi(line.substr(2, 1));
+
+            if (algo_char == 'F') {
+                set_fifo_frame(num_frame);
+            }
+            else if (algo_char == 'O') {
+                set_opt_frame(num_frame);
+            }
 
             // Store each number in numbers array (ignoring algo_char and num_frame)
             std::string ref_string = line.substr(4);
@@ -92,12 +103,21 @@ int get_size() {
     return size;
 }
 
-void set_frame(int no_frames) {
-    frame = no_frames;
+void set_fifo_frame(int no_frames) {
+    fifo_frame = no_frames;
 }
 
-int get_frame() {
-    return frame;
+void set_opt_frame(int no_frames) {
+    opt_frame = no_frames;
+}
+
+int get_frame(char algo) {
+    if (algo == 'F') {
+        return fifo_frame;
+    }
+    else if (algo == 'O') {
+        return opt_frame;
+    }
 }
 
 void perform_optimal(std::string input) {
@@ -106,12 +126,6 @@ void perform_optimal(std::string input) {
 }
 
 void perform_fifo(std::string input) {
-    // Get number of frames
-    int num_frames = std::stoi(input.substr(0, 1));
-
-    // Store num_frames in frames
-    set_frame(num_frames);
-
     // Initialize count
     int count = 0;
 
@@ -142,18 +156,76 @@ void perform_fifo(std::string input) {
             ref_string[count] = std::stoi(num_string);
             count++;
         }
-
-        // Set FRAMES constant
-        const int FRAMES = get_frame();
-
-        // Initialize and allocate paging array
-        int* paging = new int[FRAMES];
     }
 
     // Debugging
     for (int i = 0; i < count; i++) {
         std::cout << ref_string[i] << " ";
     }
+
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    // Set FRAMES constant
+    const int FRAMES = get_frame('F');
+
+    // Initialize and allocate frame array
+    int* frames = new int[FRAMES];
+    //std::cout << "frames: " << FRAMES << std::endl;
+    for (int i = 0; i < FRAMES; i++) {
+        frames[i] = -99;
+    }
+
+    // Initialize fault count
+    int faults = 0;
+
+    // Iterate through each integer
+    for (int i = 0; i < count; i++) {
+        // Initialize flag to false
+        bool present = false;
+        // Iterate through frames
+        for (int j = 0; j < FRAMES; j++) {
+            // Set flag to true if integer already in frames
+            if (frames[j] == ref_string[i]) {
+                present = true;
+                break;
+            }
+        }
+
+        // Add integer to frames if not already present
+        if (!present) {
+            for (int j = 0; j < FRAMES; j++) {
+                // Fill starting frames
+                if (frames[j] == -99) {
+                    // Increment faults
+                    faults++; 
+
+                    // Print integer
+                    std::cout << ref_string[i] << "     ";
+                    frames[j] = ref_string[i];
+                    // Print frames
+                    for (int k = 0; k < FRAMES; k++) {
+                        // Don't print -99
+                        if (frames[k] != -99) {
+                            std::cout << frames[k] << " ";
+                        }
+                    }
+                    std::cout << std::endl;
+                    break;
+                }
+                else {
+                    
+                }
+            }
+        }
+        // If integer is present
+        else {
+            std::cout << ref_string[i] << std::endl;
+        }
+    }
+
+    // Print faults
+    std::cout << "\nPage Faults: " << faults << std::endl;
 
     // Delete memory
     delete[] ref_string;
