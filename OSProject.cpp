@@ -57,8 +57,10 @@ std::string* read_file(std::ifstream& file) {
             // Initialize algo_char and num_frame
             algo_char = line[0];
 
+            // Parse number of frames
             num_frame = std::stoi(line.substr(2, 1));
 
+            // Set frames
             if (algo_char == 'F') {
                 set_fifo_frame(num_frame);
             }
@@ -162,7 +164,6 @@ void perform_fifo(std::string input) {
     for (int i = 0; i < count; i++) {
         std::cout << ref_string[i] << " ";
     }
-
     std::cout << std::endl;
     std::cout << std::endl;
 
@@ -179,6 +180,9 @@ void perform_fifo(std::string input) {
     // Initialize fault count
     int faults = 0;
 
+    // Initialize index
+    int index = 0;
+
     // Iterate through each integer
     for (int i = 0; i < count; i++) {
         // Initialize flag to false
@@ -194,32 +198,50 @@ void perform_fifo(std::string input) {
 
         // Add integer to frames if not already present
         if (!present) {
+            // Flag to track if there's a spot for integer
+            bool added = false;
             for (int j = 0; j < FRAMES; j++) {
                 // Fill starting frames
                 if (frames[j] == -99) {
-                    // Increment faults
-                    faults++; 
-
-                    // Print integer
-                    std::cout << ref_string[i] << "     ";
                     frames[j] = ref_string[i];
-                    // Print frames
-                    for (int k = 0; k < FRAMES; k++) {
-                        // Don't print -99
-                        if (frames[k] != -99) {
-                            std::cout << frames[k] << " ";
-                        }
-                    }
-                    std::cout << std::endl;
+
+                    // Increment page faults
+                    faults++;
+
+                    // Set flag to true
+                    added = true;
+
+                    // Display integer and break from loop
+                    std::cout << ref_string[i] << "     ";
                     break;
                 }
-                else {
-                    
+            }
+
+            // If there's no empty spot, replace oldest frame
+            if (!added) {
+                frames[index] = ref_string[i];
+
+                // Increment page faults
+                faults++;
+
+                // Print integer
+                std::cout << ref_string[i] << "     ";
+
+                // Increment index
+                index = (index + 1) % FRAMES;
+            }
+
+            // Print frames
+            for (int k = 0; k < FRAMES; k++) {
+                if (frames[k] != -99) {
+                    std::cout << frames[k] << " ";
                 }
             }
+            std::cout << std::endl;
         }
-        // If integer is present
+        // If integer is already present
         else {
+            // Print integer but no frames
             std::cout << ref_string[i] << std::endl;
         }
     }
