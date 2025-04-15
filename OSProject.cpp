@@ -19,15 +19,13 @@ int main() {
     std::ifstream fifo("FIFO.txt");
     std::ifstream opt("OPT.txt");
 
-    // Read in files and store into input strings
+    // Perform FIFO algorithm
     std::string* fifo_input = read_file(fifo);
-    std::string* opt_input = read_file(opt);
+    perform_fifo(*fifo_input);
 
     // Perform OPT algorithm
-
-
-    // Perform FIFO algorithm
-    perform_fifo(*fifo_input);
+    std::string* opt_input = read_file(opt);
+    perform_optimal(*opt_input);
 
     // Delete memory
     delete[] fifo_input;
@@ -96,7 +94,6 @@ std::string* read_file(std::ifstream& file) {
     return NULL;
 }
 
-
 void set_size(int array_size) {
     size = array_size;
 }
@@ -123,8 +120,120 @@ int get_frame(char algo) {
 }
 
 void perform_optimal(std::string input) {
-    // Get number of frames
-    int num_frames = std::stoi(input.substr(0, 1));
+    // Initialize count
+    int count = 0;
+
+    // Set size
+    const int MAX = get_size();
+
+    // Initialize ref_string
+    int* ref_string = new int[MAX];
+
+    // Loop through input and parse into integers
+    int i = 0;
+    while (i < input.size()) {
+        // Skip spaces and commas
+        if (input[i] == ' ' || input[i] == ',') {
+            i++;
+            continue;
+        }
+
+        // Parse number
+        std::string num_string = "";
+        while (i < input.size() && input[i] != ' ' && input[i] != ',') {
+            num_string += input[i];
+            i++;
+        }
+
+        // Convert number_string to an integer and store in ref_string
+        if (!num_string.empty()) {
+            ref_string[count] = std::stoi(num_string);
+            count++;
+        }
+    }
+
+    // Debugging
+    for (int i = 0; i < count; i++) {
+        std::cout << ref_string[i] << " ";
+    }
+
+    //Array for our active mem
+    int* ActiveMem = new int[opt_frame];
+    for (int i = 0; i < opt_frame; i++) {
+        ActiveMem[i] = -1;
+    }
+
+    bool PageFound = false;
+    int OpenMem = opt_frame;
+    int PageFaults = 0;
+    int Needed = 0;
+    int LowestBar = 9999999;
+    int KickOutPos = 0;
+
+    std::cout << OpenMem << std::endl;
+    for (int i = 0; i < count; i++) {
+
+        //Formatting to look nice in terminal
+        std::cout << ref_string[i] << "     ";
+
+        //Check ActiveMem for page
+        for (int x = 0; x < opt_frame; x++) {
+            if (ref_string[i] == ActiveMem[x]) {
+                PageFound = true;
+                break;
+            }
+        }
+
+        //if page is not found and there is no open memory slots
+        //find the least needed and replace
+        if (!PageFound && OpenMem == 0) {
+            
+            for (int x = 0; x < opt_frame; x++) {
+                for (int z = i+1; z < count; z++) {
+                    if (ActiveMem[x] == ref_string[z]) {
+                        Needed++;
+                    }
+                }
+
+                if (Needed < LowestBar) {
+                    KickOutPos = x;
+                }
+
+                if (Needed == 0) {
+                    break;
+                }
+
+                Needed = 0;
+            }
+
+            ActiveMem[KickOutPos] = ref_string[i];
+            PageFaults++;
+        }
+
+        //if page is not found and there is open memory slots
+        //Then put the page in the lowest open mem slot
+        if (!PageFound && OpenMem > 0) {
+            ActiveMem[opt_frame - OpenMem] = ref_string[i];
+            OpenMem--;
+            PageFaults++;
+        }
+
+        //Formatting to look nice in terminal
+        if (!PageFound) {
+            for (int x = 0; x < opt_frame; x++) {
+                if (ActiveMem[x] != -1) {
+                    std::cout << ActiveMem[x] << " ";
+                }
+            }
+        }
+        
+        std::cout << std::endl;
+        PageFound = false;
+    }
+
+    std::cout << "\nPage Faults: " << PageFaults << std::endl;
+    //Delete Memory
+    delete[] ref_string;
 }
 
 void perform_fifo(std::string input) {
@@ -247,7 +356,7 @@ void perform_fifo(std::string input) {
     }
 
     // Print faults
-    std::cout << "\nPage Faults: " << faults << std::endl;
+    std::cout << "\nPage Faults: " << faults << "\n\n" << std::endl;
 
     // Delete memory
     delete[] ref_string;
